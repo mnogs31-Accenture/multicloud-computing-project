@@ -103,8 +103,8 @@ resource "aws_lb_target_group" "udacity_app" {
 
 resource "aws_lb_listener" "udacity_app" {
   load_balancer_arn = aws_lb.default.id
-  port              = "80"
-  protocol          = "HTTP"
+  port               = "80"
+  protocol           = "HTTP"
 
   default_action {
     target_group_arn = aws_lb_target_group.udacity_app.id
@@ -118,8 +118,8 @@ resource "aws_security_group" "udacity_app" {
 
   ingress {
     protocol        = "tcp"
-    from_port       = 3000
-    to_port         = 3000
+    from_port        = 3000
+    to_port          = 3000
     security_groups = [aws_security_group.lb.id]
   }
 
@@ -137,7 +137,7 @@ resource "aws_ecs_cluster" "main" {
 
 resource "aws_ecs_service" "udacity_app" {
   name            = "udacity-app-service"
-  cluster         = aws_ecs_cluster.main.id
+  cluster          = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.udacity_app.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
@@ -179,11 +179,11 @@ resource "aws_ecs_task_definition" "udacity_app" {
     "environment": [
       {
         "name": "AZURE_SQL_SERVER",
-        "value": "udacity-tscotto-azure-sql"
+        "value": "udacity-mnogs-azure-sql"
       },
       {
         "name": "AZURE_DOTNET_APP",
-        "value": "udacity-tscotto-azure-dotnet-app"
+        "value": "mnogs-multicloud-2026"
       }
     ],
     "portMappings": [
@@ -203,4 +203,20 @@ variable "app_count" {
 }
 
 ####### Your Additions Will Start Here ######
+
+resource "aws_s3_bucket" "udacity_bucket" {
+  bucket        = "udacity-mnogs-aws-s3-v2026"
+  force_destroy = true
+}
+
+resource "aws_dynamodb_table" "udacity_dynamo" {
+  name           = "udacity-mnogs-aws-dynamodb"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
 
